@@ -1,0 +1,9 @@
+<preset name="linux-crosscompile" comment="Linux cross compilation preset, without GPU support">
+  <platform targetPlatform="linux" compiler="clang-crosscompile" />
+  <CMakeSwitches>
+    <cmakeSwitch name="PX_GENERATE_STATIC_LIBRARIES" value="True" comment="Generate static libraries" />
+  </CMakeSwitches>
+  <CMakeParams>
+    <cmakeParam name="CMAKE_INSTALL_PREFIX" value="install/linux-crosscompile/PhysX" comment="Install path relative to PhysX SDK root" />
+  </CMakeParams>
+</preset>

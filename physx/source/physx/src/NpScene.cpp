@@ -2800,6 +2800,7 @@ void NpScene::unlockWrite()
 
 	if (localCounts.writeLockDepth == 0)
 	{
+		mSQManager.flushUpdates();
 		mCurrentWriter = 0;	
 		mRWLock.unlockWriter();
 	}

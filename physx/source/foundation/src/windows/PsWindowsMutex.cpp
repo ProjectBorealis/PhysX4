@@ -113,6 +113,7 @@ class ReadWriteLockImpl
 	}
 	Mutex mutex;
 	volatile LONG readerCount; // handle recursive writer locking
+	volatile LONG writerCount;
 };
 
 ReadWriteLock::ReadWriteLock()
@@ -121,6 +122,7 @@ ReadWriteLock::ReadWriteLock()
 	PX_PLACEMENT_NEW(mImpl, ReadWriteLockImpl);
 
 	mImpl->readerCount = 0;
+	mImpl->writerCount = 0;
 }
 
 ReadWriteLock::~ReadWriteLock()
@@ -131,21 +133,25 @@ ReadWriteLock::~ReadWriteLock()
 
 void ReadWriteLock::lockReader(bool takeLock)
 {
-	if(takeLock)
-		mImpl->mutex.lock();
+	if(takeLock) 
+	{
+		// spin lock until no writers
+		while (mImpl->writerCount)
+			_mm_pause();
+	}
 
 	InterlockedIncrement(&mImpl->readerCount);
-
-	if(takeLock)
-		mImpl->mutex.unlock();
 }
 
 void ReadWriteLock::lockWriter()
 {
 	mImpl->mutex.lock();
+	
+	InterlockedIncrement(&mImpl->writerCount);
 
 	// spin lock until no readers
-	while(mImpl->readerCount);
+	while (mImpl->readerCount)
+		_mm_pause();
 }
 
 void ReadWriteLock::unlockReader()
@@ -156,6 +162,7 @@ void ReadWriteLock::unlockReader()
 void ReadWriteLock::unlockWriter()
 {
 	mImpl->mutex.unlock();
+	InterlockedDecrement(&mImpl->writerCount);
 }
 
 } // namespace shdfnd

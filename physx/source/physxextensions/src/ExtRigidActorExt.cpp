@@ -55,7 +55,8 @@ PxBounds3*	PxRigidActorExt::getRigidActorShapeLocalBoundsList(const PxRigidActor
 			numSqShapes++;
 	}
 
-	PxBounds3* bounds = reinterpret_cast<PxBounds3*>(PX_ALLOC(numSqShapes * sizeof(PxBounds3), "PxBounds3"));
+	// BR: Need to allocate slightly larger because we're reading the vectors as float4
+	PxBounds3* bounds = reinterpret_cast<PxBounds3*>(PX_ALLOC(numSqShapes * sizeof(PxBounds3) + sizeof(PxReal), "PxBounds3"));
 
 	numSqShapes = 0;
 	for(PxU32 i = 0; i < numShapes; i++)

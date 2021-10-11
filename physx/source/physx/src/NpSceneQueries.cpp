@@ -231,7 +231,7 @@ struct GeomQueryAny
 			// compute the scene geometry bounds
 			// PT: TODO: avoid recomputing the bounds here
 			Gu::computeBounds(b1, sceneGeom, pose, 0.0f, NULL, 1.0f);
-			const PxVec3 combExt = (b0.getExtents() + b1.getExtents())*1.01f;
+			const PxVec3 combExt = b0.getExtents() + b1.getExtents() + b0.getExtents().minimum(b1.getExtents()) * 0.02f;
 
 			PxF32 tnear, tfar;
 			if(!intersectRayAABB2(-combExt, combExt, b0.getCenter() - b1.getCenter(), input.getDir(), shrunkMaxDistance, tnear, tfar)) // returns (tnear<tfar)
@@ -719,11 +719,6 @@ bool NpSceneQueries::multiQuery(
 	PX_CHECK_MSG(!cache || (cache && cache->shape && cache->actor), "Raycast cache specified but shape or actor pointer is NULL!");
 	PxU32 cachedCompoundId = INVALID_PRUNERHANDLE;
 	const PrunerData cacheData = cache ? NpActor::getShapeManager(*cache->actor)->findSceneQueryData(*static_cast<NpShape*>(cache->shape), cachedCompoundId) : SQ_INVALID_PRUNER_DATA;
-
-	// this function is logically const for the SDK user, as flushUpdates() will not have an API-visible effect on this object
-	// internally however, flushUpdates() changes the states of the Pruners in mSQManager
-	// because here is the only place we need this, const_cast instead of making SQM mutable
-	const_cast<NpSceneQueries*>(this)->mSQManager.flushUpdates();
 
 #if PX_SUPPORT_PVD
 	CapturePvdOnReturn<HitType> pvdCapture(this, input, hitFlags, cache, filterData, filterCall, bfd, hits);

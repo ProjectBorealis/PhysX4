@@ -11,7 +11,7 @@
 //    contributors may be used to endorse or promote products derived
 //    from this software without specific prior written permission.
 //
-// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS ''AS IS'' AND ANY
+// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS ``AS IS'' AND ANY
 // EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
 // IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
 // PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL THE COPYRIGHT OWNER OR
@@ -24,61 +24,11 @@
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
 // Copyright (c) 2008-2021 NVIDIA Corporation. All rights reserved.
-// Copyright (c) 2004-2008 AGEIA Technologies, Inc. All rights reserved.
-// Copyright (c) 2001-2004 NovodeX AG. All rights reserved.  
 
-#include "ScScene.h"
-#include "ScRigidSim.h"
-#include "ScShapeSim.h"
-#include "PsFoundation.h"
 
-using namespace physx;
-using namespace Sc;
+#ifndef PX_CONFIG
+#define PX_CONFIG
 
-/*
-	PT:
 
-	The BP group ID comes from a Cm::IDPool, and RigidSim is the only class releasing the ID.
 
-	The rigid tracker ID comes from a Cm::IDPool internal to an ObjectIDTracker, and RigidSim
-	is the only class using it.
-
-	Thus we should:
-	- promote the BP group ID stuff to a "tracker" object
-	- use the BP group ID as a rigid ID
-*/
-
-RigidSim::RigidSim(Scene& scene, RigidCore& core) : ActorSim(scene, core)
-{
-	mRigidId = scene.getRigidIDTracker().createID();
-}
-
-RigidSim::~RigidSim()
-{
-	Scene& scScene = getScene();
-	scScene.getRigidIDTracker().releaseID(mRigidId);
-}
-
-void notifyActorInteractionsOfTransformChange(ActorSim& actor);
-void RigidSim::notifyShapesOfTransformChange()
-{
-	if(0)
-	{
-		for (ElementSim* current : getElements_())
-		{
-			ShapeSim* sim = static_cast<ShapeSim*>(current);
-			sim->onVolumeOrTransformChange(false);
-		}
-	}
-	else
-	{
-		for (ElementSim* current : getElements_())
-		{
-			ShapeSim* sim = static_cast<ShapeSim*>(current);
-			sim->markBoundsForUpdate(false);
-		}
-
-		notifyActorInteractionsOfTransformChange(*this);
-	}
-}
-
+#endif  // PX_CONFIG

@@ -1,0 +1,10 @@
+# Ignore all the project files, except for the global cmake rules
+/physx/compiler/*
+!/physx/compiler/public/
+
+# Ignore the binaries, except for the ones that come by default
+/physx/bin/*
+!/physx/bin/**/libPhysXGpu_64.so
+!/physx/bin/**/glut32.dll
+!/physx/bin/**/PhysXDevice.dll
+!/physx/bin/**/PhysXDevice64.dll

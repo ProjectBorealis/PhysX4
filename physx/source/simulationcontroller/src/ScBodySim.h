@@ -235,7 +235,7 @@ namespace Sc
 			return (getFlagsFast()&ktFlags) == ktFlags;
 		}
 
-		PX_FORCE_INLINE	PxU32					getNbShapes()									const	{ return mElementCount; }
+		PX_FORCE_INLINE	PxU32					getNbShapes()									const	{ return mElements.size(); }
 
 						void					createSqBounds();
 						void					destroySqBounds();

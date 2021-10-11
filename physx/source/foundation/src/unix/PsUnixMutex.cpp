@@ -123,6 +123,7 @@ class ReadWriteLockImpl
   public:
 	Mutex mutex;
 	volatile int readerCounter;
+	volatile int writerCount;
 };
 
 ReadWriteLock::ReadWriteLock()
@@ -131,6 +132,7 @@ ReadWriteLock::ReadWriteLock()
 	PX_PLACEMENT_NEW(mImpl, ReadWriteLockImpl);
 
 	mImpl->readerCounter = 0;
+	mImpl->writerCount = 0;
 }
 
 ReadWriteLock::~ReadWriteLock()
@@ -141,21 +143,25 @@ ReadWriteLock::~ReadWriteLock()
 
 void ReadWriteLock::lockReader(bool takeLock)
 {
-	if(takeLock)
-		mImpl->mutex.lock();
+	if(takeLock) 
+	{
+		// spin lock until no writers
+		while (mImpl->writerCount)
+			_mm_pause();
+	}
 
 	atomicIncrement(&mImpl->readerCounter);
-
-	if(takeLock)
-		mImpl->mutex.unlock();
 }
 
 void ReadWriteLock::lockWriter()
 {
 	mImpl->mutex.lock();
+		
+	atomicDecrement(&mImpl->writerCount);
 
 	// spin lock until no readers
-	while(mImpl->readerCounter);
+	while (mImpl->readerCount)
+		_mm_pause();
 }
 
 void ReadWriteLock::unlockReader()
@@ -166,6 +172,7 @@ void ReadWriteLock::unlockReader()
 void ReadWriteLock::unlockWriter()
 {
 	mImpl->mutex.unlock();
+	atomicDecrement(&mImpl->writerCount);
 }
 
 } // namespace shdfnd

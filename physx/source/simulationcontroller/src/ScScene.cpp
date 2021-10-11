@@ -227,15 +227,13 @@ public:
 			
 			for(PxU32 i = 0; i < nbBpUpdates; i++)
 			{
-				Sc::ElementSim* current = bpUpdates[i]->getElements_();
-				while(current)
+				for (Sc::ElementSim* current : bpUpdates[i]->getElements_())
 				{
 					Sc::ShapeSim* sim = static_cast<Sc::ShapeSim*>(current);
 					// PT: TODO: what's the difference between this test and "isInBroadphase" as used in bodySim->updateCached ?
 					// PT: Also, shouldn't it be "isInAABBManager" rather than BP ?
 					if(sim->getFlags()&PxU32(PxShapeFlag::eSIMULATION_SHAPE | PxShapeFlag::eTRIGGER_SHAPE))	// TODO: need trigger shape here?
 						changedAABBMgrHandles.growAndSet(sim->getElementID());
-					current = current->mNextInActor;
 				}
 			}
 
@@ -2166,12 +2164,10 @@ void Sc::Scene::preRigidBodyNarrowPhase(PxBaseTask* continuation)
 			hasContactDistanceChanged = true;
 			ccdTask->mBodySims[ccdTask->mNbBodies++] = bodySim;
 
-			ElementSim* current = bodySim->getElements_();
-			while (current)
+			for (ElementSim* current : bodySim->getElements_())
 			{
 				if (static_cast<Sc::ShapeSim*>(current)->getFlags() & PxShapeFlag::eSIMULATION_SHAPE)
 					changedMap.growAndSet(current->getElementID());
-				current = current->mNextInActor;
 			}
 
 			if (ccdTask->mNbBodies == SpeculativeCCDContactDistanceUpdateTask::MaxBodies)
@@ -2977,8 +2973,7 @@ public:
 			PxU32 isFastMoving = 0;
 			Sc::BodySim& bodySim = *mBodySims[i];
 
-			Sc::ElementSim* current = bodySim.getElements_();
-			while(current)
+			for (Sc::ElementSim* current : bodySim.getElements_())
 			{
 				Sc::ShapeSim* sim = static_cast<Sc::ShapeSim*>(current);
 				if(sim->getFlags()&PxU32(PxShapeFlag::eSIMULATION_SHAPE | PxShapeFlag::eTRIGGER_SHAPE))
@@ -2988,7 +2983,6 @@ public:
 
 					isFastMoving = isFastMoving | fastMovingShape;
 				}
-				current = current->mNextInActor;
 			}
 
 			bodySim.getLowLevelBody().getCore().isFastMoving = isFastMoving!=0;
@@ -3086,13 +3080,11 @@ void Sc::Scene::updateCCDSinglePass(PxBaseTask* continuation)
 		//changedAABBMgrActorHandles.clear();
 		for(PxU32 i = 0; i < mCcdBodies.size();i++)
 		{
-			Sc::ElementSim* current = mCcdBodies[i]->getElements_();
-			while(current)
+			for (Sc::ElementSim* current : mCcdBodies[i]->getElements_())
 			{
 				Sc::ShapeSim* sim = static_cast<Sc::ShapeSim*>(current);
 				if(sim->getFlags()&PxU32(PxShapeFlag::eSIMULATION_SHAPE | PxShapeFlag::eTRIGGER_SHAPE))	// TODO: need trigger shape here?
 					changedAABBMgrActorHandles.growAndSet(sim->getElementID());
-				current = current->mNextInActor;
 			}
 		}
 	}
@@ -3275,12 +3267,11 @@ void Sc::Scene::updateKinematicCached(PxBaseTask* continuation)
 				}
 				if ((i + 4) < nbKinematics)
 				{
-					Ps::prefetchLine(kinematics[i + 4]->getSim()->getElements_());
+					Ps::prefetchLine(kinematics[i + 4]->getSim()->getElements_().data());
 				}
 			}
 
-			Sc::ElementSim* current = bodySim->getElements_();
-			while(current)
+			for (ElementSim* current : bodySim->getElements_())
 			{
 				Sc::ShapeSim* sim = static_cast<Sc::ShapeSim*>(current);
 				//KS - TODO - can we parallelize this? The problem with parallelizing is that it's a bit operation,
@@ -3290,7 +3281,6 @@ void Sc::Scene::updateKinematicCached(PxBaseTask* continuation)
 				{
 					changedAABBMap.set(sim->getElementID());
 				}
-				current = current->mNextInActor;
 			}
 
 			mSimulationController->updateDynamic(false, bodySim->getNodeIndex());
@@ -4099,13 +4089,11 @@ void Sc::Scene::afterIntegration(PxBaseTask* continuation)
 			{
 				if (!mProjectedBodies[a]->isFrozen())
 				{
-					Sc::ElementSim* current = mProjectedBodies[a]->getElements_();
-					while(current)
+					for (Sc::ElementSim* current : mProjectedBodies[a]->getElements_())
 					{
 						Sc::ShapeSim* sim = static_cast<Sc::ShapeSim*>(current);
 						if(sim->isInBroadPhase())
 							changedAABBMgrActorHandles.growAndSet(sim->getElementID());
-						current = current->mNextInActor;
 					}
 				}
 			}
@@ -4821,14 +4809,12 @@ void Sc::Scene::addShapes(void *const* shapes, PxU32 nbShapes, size_t ptrOffset,
 
 void Sc::Scene::removeShapes(Sc::RigidSim& sim, Ps::InlineArray<Sc::ShapeSim*, 64>& shapesBuffer , Ps::InlineArray<const Sc::ShapeCore*,64>& removedShapes, bool wakeOnLostTouch)
 {
-	Sc::ElementSim* current = sim.getElements_();
-	while(current)
+	for (Sc::ElementSim* current : sim.getElements_())
 	{
 		Sc::ShapeSim* s = static_cast<Sc::ShapeSim*>(current);
 		// can do two 2x the allocs in the worst case, but actors with >64 shapes are not common
 		shapesBuffer.pushBack(s);
 		removedShapes.pushBack(&s->getCore());
-		current = current->mNextInActor;
 	}
 
 	for(PxU32 i=0;i<shapesBuffer.size();i++)
@@ -4854,7 +4840,7 @@ void Sc::Scene::prefetchForRemove(const StaticCore& core) const
 	if(sim)
 	{
 		Ps::prefetch(sim,sizeof(Sc::StaticSim));
-		Ps::prefetch(sim->getElements_(),sizeof(Sc::ElementSim));
+		Ps::prefetch(sim->getElements_().data(),sizeof(Sc::ElementSim));
 	}
 }
 
@@ -4864,7 +4850,7 @@ void Sc::Scene::prefetchForRemove(const BodyCore& core) const
 	if(sim)
 	{
 		Ps::prefetch(sim,sizeof(Sc::BodySim));
-		Ps::prefetch(sim->getElements_(),sizeof(Sc::ElementSim));
+		Ps::prefetch(sim->getElements_().data(),sizeof(Sc::ElementSim));
 	}
 }
 
