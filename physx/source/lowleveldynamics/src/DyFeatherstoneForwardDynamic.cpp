@@ -146,7 +146,7 @@ namespace Dy
 
 			const PxReal stIs = sa.innerProduct(Is);
 
-			const PxReal iStIs = (stIs > /*PX_EPS_REAL*/1e-5f) ? (1.f / stIs) : 0.f;
+			const PxReal iStIs = (stIs > PX_EPS_REAL) ? (1.f / stIs) : 0.f;
 
 			invStIs.invStIs[0][0] = iStIs;
 
