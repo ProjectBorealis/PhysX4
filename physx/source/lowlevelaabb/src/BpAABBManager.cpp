@@ -41,6 +41,7 @@
 #include "PsHashSet.h"
 #include "PsVecMath.h"
 #include "GuInternal.h"
+#include "PxAggregate.h"
 #include "common/PxProfileZone.h"
 //#include <stdio.h>
 
@@ -1384,7 +1385,9 @@ AggregateHandle AABBManager::createAggregate(BoundsIndex index, Bp::FilterGroup:
 		id|=FilterType::AGGREGATE;
 		initEntry(index, 0.0f, Bp::FilterGroup::Enum(id), userData);
 	#endif*/
-	initEntry(index, 0.0f, getAggregateGroup(), userData);
+	// BR: Mega bodge, only our bricks turn this off...
+	bool bStatic = !static_cast<PxAggregate*>(userData)->getSelfCollision();
+	initEntry(index, 0.0f, getAggregateGroup(bStatic), userData);
 	PX_UNUSED(group);
 #else
 	initEntry(index, 0.0f, group, userData);

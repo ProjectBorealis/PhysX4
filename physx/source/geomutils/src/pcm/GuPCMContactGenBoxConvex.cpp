@@ -184,11 +184,11 @@ namespace Gu
 			const Gu::HullPolygonData& polygon = polyData.mPolygons[i];
 			const PxU8* inds = polyData.mPolygonVertexRefs + polygon.mVRef8;
 			
-			Vec3V v0 = M33MulV3(map->vertex2Shape, V3LoadU_SafeReadW(polyData.mVerts[inds[0]]));	// PT: safe because of the way vertex memory is allocated in ConvexHullData
+			Vec3V v0 = M33MulV3(map->vertex2Shape, V3LoadU_SafeReadW(polyData.mVerts[inds[polygon.mNbVerts - 1]]));	// PT: safe because of the way vertex memory is allocated in ConvexHullData
 		
 			FloatV dist0 = V3Dot(dir, V3Sub(v0, planeP));
 
-			for (PxU32 iStart = 0, iEnd = PxU32(polygon.mNbVerts - 1); iStart < polygon.mNbVerts; iEnd = iStart++)
+			for (PxU32 iEnd = 0; iEnd < polygon.mNbVerts; iEnd++)
 			{
 				const Vec3V v1 = M33MulV3(map->vertex2Shape, V3LoadU_SafeReadW(polyData.mVerts[inds[iEnd]]));	// PT: safe because of the way vertex memory is allocated in ConvexHullData
 				
@@ -334,7 +334,7 @@ namespace Gu
 				if(BAllEqTTTT(con))
 					return false;
 
-				const FloatV tempOverlap = FSub(max0, min1);
+				const FloatV tempOverlap = FMin(FSub(max0, min1), FSub(max1, min0));
 
 #if PCM_USE_INTERNAL_OBJECT
 				PX_ASSERT(FAllGrtrOrEq(tempOverlap, _tempOverlap));

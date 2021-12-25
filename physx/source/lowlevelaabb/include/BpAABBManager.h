@@ -575,7 +575,7 @@
 				mFreeAggregateGroups.pushBack(group);
 			}
 
-			PX_FORCE_INLINE Bp::FilterGroup::Enum	getAggregateGroup()
+			PX_FORCE_INLINE Bp::FilterGroup::Enum	getAggregateGroup(bool bStatic)
 			{
 				PxU32 id;
 				if(mFreeAggregateGroups.size())
@@ -585,7 +585,10 @@
 					id = mAggregateGroupTide--;
 		#ifdef BP_FILTERING_USES_TYPE_IN_GROUP
 					id<<=2;
-					id|=FilterType::AGGREGATE;
+					if (bStatic)
+						id|=FilterType::STATIC;
+					else
+						id|=FilterType::AGGREGATE;
 		#endif
 				}
 				const Bp::FilterGroup::Enum group = Bp::FilterGroup::Enum(id);
