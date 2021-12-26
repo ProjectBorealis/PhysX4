@@ -27,6 +27,8 @@
 // Copyright (c) 2004-2008 AGEIA Technologies, Inc. All rights reserved.
 // Copyright (c) 2001-2004 NovodeX AG. All rights reserved.
 
+#include <emmintrin.h>
+
 #include "foundation/PxAssert.h"
 #include "foundation/PxErrorCallback.h"
 
@@ -160,7 +162,7 @@ void ReadWriteLock::lockWriter()
 	atomicDecrement(&mImpl->writerCount);
 
 	// spin lock until no readers
-	while (mImpl->readerCount)
+	while (mImpl->readerCounter)
 		_mm_pause();
 }
 
