@@ -29,6 +29,7 @@
 #ifndef PX_CONFIG
 #define PX_CONFIG
 
+#define DISABLE_CUDA_PHYSX
 
 
 #endif  // PX_CONFIG
