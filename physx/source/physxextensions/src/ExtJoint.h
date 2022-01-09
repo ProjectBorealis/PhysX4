@@ -193,6 +193,26 @@ namespace Ext
 			return actor->getGlobalPose();
 		}
 
+		static PxTransform getBodyPose(const PxRigidActor *actor)
+		{
+			if (!actor)
+				return PxTransform(PxIdentity);
+			else if (actor->is<PxRigidStatic>())
+				return actor->getGlobalPose();
+			else
+				return actor->getGlobalPose() * static_cast<const PxRigidBody *>(actor)->getCMassLocalPose();
+		}
+
+		static PxTransform getComLocal(PxRigidActor *actor)
+		{
+			if (!actor)
+				return PxTransform(PxIdentity);
+			else if (actor->getType() == PxActorType::eRIGID_DYNAMIC || actor->getType() == PxActorType::eARTICULATION_LINK)
+				return static_cast<PxRigidBody *>(actor)->getCMassLocalPose();
+			else
+				return PxTransform(PxIdentity);
+		}
+
 		static	void	getActorVelocity(const PxRigidActor* actor, PxVec3& linear, PxVec3& angular)
 		{
 			if(!actor || actor->is<PxRigidStatic>())
@@ -210,9 +230,9 @@ namespace Ext
 		{
 			PxRigidActor* actor0, * actor1;
 			mPxConstraint->getActors(actor0, actor1);
-			const PxTransform t0 = getGlobalPose(actor0) * mLocalPose[0];
-			const PxTransform t1 = getGlobalPose(actor1) * mLocalPose[1];
-			return t0.transformInv(t1);
+			const PxTransform c2b0 = getGlobalPose(actor0).transform(mLocalPose[0]);
+			const PxTransform c2b1 = getGlobalPose(actor1).transform(mLocalPose[1]);
+			return c2b0.transformInv(c2b1);
 		}
 
 		// PxJoint
@@ -222,13 +242,21 @@ namespace Ext
 			PxVec3 l0, a0, l1, a1;
 			mPxConstraint->getActors(actor0, actor1);
 
-			PxTransform t0 = getCom(actor0), t1 = getCom(actor1);
+			PxTransform t0 = getBodyPose(actor0), t1 = getBodyPose(actor1);
+
+			// joint frame to COM
+			PxTransform c2b0 = getComLocal(actor0).transformInv(mLocalPose[0]),
+						c2b1 = getComLocal(actor1).transformInv(mLocalPose[1]);
+
 			getActorVelocity(actor0, l0, a0);
 			getActorVelocity(actor1, l1, a1);
 
-			PxVec3 p0 = t0.q.rotate(mLocalPose[0].p), 
-				   p1 = t1.q.rotate(mLocalPose[1].p);
-			return t0.transformInv(l1 - a1.cross(p1) - l0 + a0.cross(p0));
+			PxVec3 cv0ToWorld = l0 + a0.cross(t0.rotate(c2b0.p)),
+				   cv1ToWorld = l1 + a1.cross(t1.rotate(c2b1.p));
+
+			PxQuat q0 = t0.q * c2b0.q;
+
+			return q0.rotateInv(cv1ToWorld - cv0ToWorld);
 		}
 
 		// PxJoint
@@ -238,11 +266,11 @@ namespace Ext
 			PxVec3 l0, a0, l1, a1;
 			mPxConstraint->getActors(actor0, actor1);
 
-			PxTransform t0 = getCom(actor0);
+			PxQuat cq0 = getGlobalPose(actor0).q * mLocalPose[0].q;
 			getActorVelocity(actor0, l0, a0);
 			getActorVelocity(actor1, l1, a1);
 
-			return t0.transformInv(a1 - a0);
+			return cq0.rotateInv(a1 - a0);
 		}
 
 		// PxJoint
