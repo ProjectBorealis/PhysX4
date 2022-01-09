@@ -637,8 +637,8 @@ bool PxsCCDPair::sweepAdvanceToToi(PxReal dt, bool clipTrajectoryToToi)
 		PxVec3 localPoint0(0.f), localPoint1(0.f);
 #endif
 
-		PxReal dom0 = mCm->getDominance0();
-		PxReal dom1 = mCm->getDominance1();
+		PxReal dom0 = mCm->getDominance0() * mInvMassScale0;
+		PxReal dom1 = mCm->getDominance1() * mInvMassScale1;
 
 		//Work out velocity and invMass for body 0
 		if(atom0)
@@ -1082,6 +1082,8 @@ public:
 						if ((patch->internalFlags & PxContactPatch::eHAS_MAX_IMPULSE))
 							pair.mMaxImpulse = point->maxImpulse;
 
+						pair.mInvMassScale0 = patch->mMassModification.mInvMassScale0;
+						pair.mInvMassScale1 = patch->mMassModification.mInvMassScale1;
 						pair.mDynamicFriction = point->dynamicFriction;
 						pair.mStaticFriction = point->staticFriction;
 						pair.mRestitution = point->restitution;

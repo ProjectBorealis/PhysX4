@@ -349,6 +349,8 @@ struct PxsCCDPair
 	PxsRigidBody*			mBa1;					// Body B. Can be NULL for statics
 	PxsCCDShape*			mCCDShape0;				// Shape A
 	PxsCCDShape*			mCCDShape1;				// Shape B
+	PxReal					mInvMassScale0;			// The inverse mass scale of A
+	PxReal					mInvMassScale1;			// The inverse mass scale of B
 	PxVec3					mMinToiNormal;			// The contact normal. Only valid for precise results. On the surface of body/shape A
 	PxReal					mMinToi;				// Min TOI. Valid for both precise and estimated results but estimates may be too early (i.e. conservative).
 	PxReal					mPenetrationPostStep;	// Valid only for precise sweeps. Only used for initial intersections (i.e. at TOI = 0).
