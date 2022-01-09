@@ -289,7 +289,7 @@ bool ConvexHullBuilder::checkHullPolygons() const
 			if(!foundPlane[k])
 			{
 				const float d = P.distance(testVectors[k]);
-				if(d >= 0)
+				if (d > -1.0e-7f)
 				{
 					foundPlane[k] = true;
 				}
