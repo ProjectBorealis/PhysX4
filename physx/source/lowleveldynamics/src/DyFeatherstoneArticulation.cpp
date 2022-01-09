@@ -2722,7 +2722,7 @@ namespace Dy
 
 						if (hasDrive)
 						{
-							const PxReal targetVelocity = -jointTranDatum.targetJointVelocity[dofId];
+							const PxReal targetVelocity = jointTranDatum.targetJointVelocity[dofId];
 							PxReal targetPos = jointTranDatum.targetJointPosition[dofId];
 
 							//KS - clamp drive target within limits - no point in having 2 parts fight against each-other
