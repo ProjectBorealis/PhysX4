@@ -52,7 +52,7 @@ public:
 	PX_INLINE PxSphereGeometry() :							PxGeometry(PxGeometryType::eSPHERE), radius(0) {}
 	PX_INLINE PxSphereGeometry(PxReal ir) :					PxGeometry(PxGeometryType::eSPHERE), radius(ir) {}
 
-	PxSphereGeometry &operator=(const PxSphereGeometry &) = delete;
+	//PxSphereGeometry &operator=(const PxSphereGeometry &) = delete;
 
 	/**
 	\brief Returns true if the geometry is valid.
