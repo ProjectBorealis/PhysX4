@@ -1387,7 +1387,7 @@ AggregateHandle AABBManager::createAggregate(BoundsIndex index, Bp::FilterGroup:
 	#endif*/
 	// BR: Mega bodge, only our bricks turn this off...
 	bool bStatic = !static_cast<PxAggregate*>(userData)->getSelfCollision();
-	initEntry(index, 0.0f, getAggregateGroup(bStatic), userData);
+	initEntry(index, 0.0f, bStatic ? FilterGroup::eSTATICS : getAggregateGroup(), userData);
 	PX_UNUSED(group);
 #else
 	initEntry(index, 0.0f, group, userData);
@@ -1455,7 +1455,10 @@ bool AABBManager::destroyAggregate(BoundsIndex& index_, Bp::FilterGroup::Enum& g
 	group_ = mGroups[index];
 
 #ifdef BP_USE_AGGREGATE_GROUP_TAIL
-	releaseAggregateGroup(mGroups[index]);
+	if(mGroups[index] != FilterGroup::eSTATICS)
+	{
+		releaseAggregateGroup(mGroups[index]);
+	}
 #endif
 	resetEntry(index);
 
