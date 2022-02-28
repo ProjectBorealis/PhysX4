@@ -354,7 +354,7 @@ void preprocessRows(Px1DConstraint** sorted,
 		while(i<rowCount && PxU32(sorted[i]->solveHint>>8) == groupMajorId)
 			i++;
 
-		if(groupMajorId == 4 || (groupMajorId == 8 && preprocessLinear))
+		if(groupMajorId == 4 || groupMajorId == 8)
 		{
 			PxU32 bCount = start;		// count of bilateral constraints 
 			for(; bCount<i && (sorted[bCount]->solveHint&255)==0; bCount++)
