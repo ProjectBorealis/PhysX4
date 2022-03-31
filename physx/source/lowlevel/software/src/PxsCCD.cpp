@@ -1061,7 +1061,7 @@ public:
 						patch->internalFlags = 0;											//44  //Can be a U16
 
 						point->contact = pair.mMinToiPoint;
-						point->normal = pair.mMinToiNormal;
+						point->normal = -pair.mMinToiNormal; //CCD normal is reversed
 
 						//KS - todo - reintroduce face indices!!!!
 						//point.internalFaceIndex0 = PXC_CONTACT_NO_FACE_INDEX;
@@ -1088,7 +1088,7 @@ public:
 						pair.mStaticFriction = point->staticFriction;
 						pair.mRestitution = point->restitution;
 						pair.mMinToiPoint = point->contact;
-						pair.mMinToiNormal = point->normal;
+						pair.mMinToiNormal = -point->normal;
 					}
 				}
 
