@@ -1037,7 +1037,7 @@ public:
 						mCCDContext->getCCDContactModifyCallback())
 					{
 
-						PX_ALIGN(16, PxU8 dataBuffer[sizeof(PxModifiableContact) + sizeof(PxContactPatch) + 2 * sizeof(PxU32)]); // add 2 PxU32 to support faceIndex, stored in the last U32
+						PX_ALIGN(16, PxU8 dataBuffer[sizeof(PxModifiableContact) + sizeof(PxContactPatch)]);
 
 						PxContactPatch* patch = reinterpret_cast<PxContactPatch*>(dataBuffer);
 						PxModifiableContact* point = reinterpret_cast<PxModifiableContact*>(patch + 1);
@@ -1061,14 +1061,11 @@ public:
 						patch->internalFlags = 0;											//44  //Can be a U16
 
 						point->contact = pair.mMinToiPoint;
-						point->normal = -pair.mMinToiNormal; //CCD normal is reversed
+						point->normal = pair.mMinToiNormal;
 
-						if (pair.mG1 == PxGeometryType::eTRIANGLEMESH || pair.mG1 == PxGeometryType::eHEIGHTFIELD)
-						{
-							patch->internalFlags |= PxContactPatch::eHAS_FACE_INDICES;
-							PxU32 *faceIndexBuffer = (reinterpret_cast<PxU32 *>(point + 1)) + 1;
-							*faceIndexBuffer = pair.mFaceIndex;
-						}
+						//KS - todo - reintroduce face indices!!!!
+						//point.internalFaceIndex0 = PXC_CONTACT_NO_FACE_INDEX;
+						//point.internalFaceIndex1 = pair.mFaceIndex;
 						point->materialIndex0 = pair.mMaterialIndex0;
 						point->materialIndex1 = pair.mMaterialIndex1;
 						point->dynamicFriction = pair.mDynamicFriction;
@@ -1091,7 +1088,7 @@ public:
 						pair.mStaticFriction = point->staticFriction;
 						pair.mRestitution = point->restitution;
 						pair.mMinToiPoint = point->contact;
-						pair.mMinToiNormal = -point->normal; //reverse back normal from contact modification
+						pair.mMinToiNormal = point->normal;
 					}
 				}
 
