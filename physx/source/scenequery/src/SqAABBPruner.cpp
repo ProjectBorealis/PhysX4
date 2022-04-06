@@ -158,7 +158,7 @@ void AABBPruner::updateObjectsAfterManualBoundsUpdates(const PrunerHandle* handl
 				PX_UNUSED(found); PX_ASSERT(found);
 			}
 
-			if(mProgress==BUILD_NEW_MAPPING || mProgress==BUILD_FULL_REFIT)
+			if(mProgress==BUILD_NEW_MAPPING || mProgress==BUILD_FULL_REFIT || mProgress==BUILD_LAST_FRAME)
 				mToRefit.pushBack(poolIndex);
 		}
 	}
@@ -195,7 +195,7 @@ void AABBPruner::updateObjectsAndInflateBounds(const PrunerHandle* handles, cons
 				PX_UNUSED(found); PX_ASSERT(found);
 			}
 
-			if(mProgress == BUILD_NEW_MAPPING || mProgress == BUILD_FULL_REFIT)
+			if(mProgress==BUILD_NEW_MAPPING || mProgress==BUILD_FULL_REFIT || mProgress==BUILD_LAST_FRAME)
 				mToRefit.pushBack(poolIndex);
 		}
 	}
