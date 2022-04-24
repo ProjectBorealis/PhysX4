@@ -297,7 +297,7 @@ PxRigidDynamic* PxCloneDynamic(PxPhysics& physicsSDK,
 	to->setLinearVelocity(from.getLinearVelocity());
 	to->setAngularVelocity(from.getAngularVelocity());
 
-	to->setLinearDamping(from.getAngularDamping());
+	to->setLinearDamping(from.getLinearDamping());
 	to->setAngularDamping(from.getAngularDamping());
 
 	PxU32 posIters, velIters;
