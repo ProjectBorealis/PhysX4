@@ -957,10 +957,10 @@ static PxU32 D6JointSolverPrep(Px1DConstraint* constraints,
 				const PxVec3 err = delta.rotate(PxVec3(1.0f, 0.0f, 0.0f));
 
 				if(!(locked & SWING1_FLAG))
-					ch.angular(cB2w_m[1], v.y, err.z, drives[PxD6Drive::eSWING]);
+					ch.angular(aY, v.y, err.z, drives[PxD6Drive::eSWING]);
 
 				if(!(locked & SWING2_FLAG))
-					ch.angular(cB2w_m[2], v.z, -err.y, drives[PxD6Drive::eSWING]);
+					ch.angular(aZ, v.z, -err.y, drives[PxD6Drive::eSWING]);
 			}
 		}
 	}
