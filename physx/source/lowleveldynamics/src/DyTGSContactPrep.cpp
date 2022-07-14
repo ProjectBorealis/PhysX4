@@ -2078,7 +2078,7 @@ PxU32 setupSolverConstraintStep(
 
 	preprocessRows(sorted, prepDesc.rows, angSqrtInvInertia0, angSqrtInvInertia1, prepDesc.numRows,
 		prepDesc.body0TxI->sqrtInvInertia, prepDesc.body1TxI->sqrtInvInertia, prepDesc.bodyData0->invMass, prepDesc.bodyData1->invMass,
-		prepDesc.invMassScales, isExtended || prepDesc.disablePreprocessing, prepDesc.improvedSlerp, false);
+		prepDesc.invMassScales, isExtended || prepDesc.disablePreprocessing, prepDesc.improvedSlerp, true);
 
 	PxReal erp = 1.f;
 	PxReal linearErp = 1.f;

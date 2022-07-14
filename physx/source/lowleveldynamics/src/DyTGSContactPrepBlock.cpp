@@ -1913,7 +1913,7 @@ SolverConstraintPrepState::Enum setupSolverConstraintStep4
 
 		preprocessRows(sorted, desc.rows, angSqrtInvInertia0 + numRows, angSqrtInvInertia1 + numRows, desc.numRows,
 			desc.body0TxI->sqrtInvInertia, desc.body1TxI->sqrtInvInertia, desc.bodyData0->invMass, desc.bodyData1->invMass,
-			desc.invMassScales, desc.disablePreprocessing, desc.improvedSlerp, false);
+			desc.invMassScales, desc.disablePreprocessing, desc.improvedSlerp, true);
 
 		numRows += desc.numRows;
 	}
