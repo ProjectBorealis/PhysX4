@@ -1058,6 +1058,7 @@ PX_INLINE void Body::syncState()
 		flush<Buf::BF_Body2Actor>(buffer);
 		flush<Buf::BF_FreezeThreshold>(buffer);
 		flush<Buf::BF_MaxPenetrationBias>(buffer);
+		flush<Buf::BF_RigidDynamicLockFlags>(buffer);
 		flush<Buf::BF_MaxContactImpulse>(buffer);
 		flush<Buf::BF_CCDAdvanceCoefficient>(buffer);
 #endif
