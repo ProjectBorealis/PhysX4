@@ -766,6 +766,12 @@ Sc::ElementSimInteraction* Sc::NPhaseCore::createRbElementInteraction(const PxFi
 {
 	ElementSimInteraction* pair = NULL;
 
+	if(finfo.filterFlags & PxFilterFlag::eKILL)
+	{
+		PX_ASSERT(finfo.filterPairIndex == INVALID_FILTER_PAIR_INDEX);  // No filter callback pair info for killed pairs
+		return NULL;
+	}
+
 	if((finfo.filterFlags & PxFilterFlag::eSUPPRESS) == false)
 	{
 		if(!isTriggerPair)
@@ -796,12 +802,6 @@ Sc::ElementSimInteraction* Sc::NPhaseCore::createRbElementInteraction(ShapeSim& 
 
 	bool isTriggerPair = false;
 	const PxFilterInfo finfo = filterRbCollisionPair(context, s0, s1, INVALID_FILTER_PAIR_INDEX, isTriggerPair, false);
-
-	if(finfo.filterFlags & PxFilterFlag::eKILL)
-	{
-		PX_ASSERT(finfo.filterPairIndex == INVALID_FILTER_PAIR_INDEX);  // No filter callback pair info for killed pairs
-		return NULL;
-	}
 
 	return createRbElementInteraction(finfo, s0, s1, contactManager, shapeInteraction, interactionMarker, isTriggerPair);
 }
