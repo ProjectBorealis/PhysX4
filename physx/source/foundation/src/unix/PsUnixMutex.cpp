@@ -159,7 +159,7 @@ void ReadWriteLock::lockWriter()
 {
 	mImpl->mutex.lock();
 		
-	atomicDecrement(&mImpl->writerCount);
+	atomicIncrement(&mImpl->writerCount);
 
 	// spin lock until no readers
 	while (mImpl->readerCounter)
